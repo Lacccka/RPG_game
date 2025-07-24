@@ -1,0 +1,440 @@
+monsters:
+    templates:
+        GOBLIN:
+            base_health: 30
+            base_strength: 4
+            base_agility: 6
+            base_intelligence: 1
+            defense: 2
+            tags: [humanoid]
+            resistances: []
+            weaknesses: [fire]
+
+        ORC:
+            base_health: 100
+            base_strength: 10
+            base_agility: 4
+            base_intelligence: 2
+            defense: 6
+            tags: [humanoid, brute]
+            resistances: [physical]
+            weaknesses: [magic]
+
+        DRAGON:
+            base_health: 300
+            base_strength: 20
+            base_agility: 10
+            base_intelligence: 15
+            defense: 12
+            tags: [dragon, flying, fire]
+            resistances: [fire, physical]
+            weaknesses: [ice, magic]
+
+        SKELETON:
+            base_health: 40
+            base_strength: 5
+            base_agility: 3
+            base_intelligence: 1
+            defense: 3
+            tags: [undead]
+            resistances: [poison]
+            weaknesses: [holy, blunt]
+
+        ZOMBIE:
+            base_health: 60
+            base_strength: 7
+            base_agility: 2
+            base_intelligence: 1
+            defense: 4
+            tags: [undead]
+            resistances: [poison]
+            weaknesses: [fire, holy]
+
+        WOLF:
+            base_health: 50
+            base_strength: 8
+            base_agility: 14
+            base_intelligence: 3
+            defense: 3
+            tags: [beast]
+            resistances: [cold]
+            weaknesses: [fire]
+
+        TROLL:
+            base_health: 200
+            base_strength: 15
+            base_agility: 4
+            base_intelligence: 2
+            defense: 10
+            tags: [giant]
+            resistances: [physical]
+            weaknesses: [fire, poison]
+
+        VAMPIRE:
+            base_health: 150
+            base_strength: 12
+            base_agility: 12
+            base_intelligence: 10
+            defense: 6
+            tags: [undead]
+            resistances: [dark, poison]
+            weaknesses: [holy, fire]
+
+        GIANT_SPIDER:
+            base_health: 80
+            base_strength: 10
+            base_agility: 15
+            base_intelligence: 2
+            defense: 4
+            tags: [beast, poison]
+            resistances: [poison]
+            weaknesses: [fire]
+
+        ELEMENTAL:
+            base_health: 120
+            base_strength: 8
+            base_agility: 6
+            base_intelligence: 14
+            defense: 5
+            tags: [magic, elemental]
+            resistances: [magic, fire]
+            weaknesses: [ice]
+
+        LICH:
+            base_health: 180
+            base_strength: 6
+            base_agility: 8
+            base_intelligence: 18
+            defense: 8
+            tags: [undead, mage]
+            resistances: [dark, poison, magic]
+            weaknesses: [holy, fire]
+
+        DARK_KNIGHT:
+            base_health: 160
+            base_strength: 14
+            base_agility: 5
+            base_intelligence: 8
+            defense: 8
+            tags: [undead, knight]
+            resistances: [physical]
+            weaknesses: [light, holy]
+
+        OGRE:
+            base_health: 180
+            base_strength: 16
+            base_agility: 3
+            base_intelligence: 3
+            defense: 10
+            tags: [giant]
+            resistances: [physical]
+            weaknesses: [fire]
+
+        SLIME:
+            base_health: 20
+            base_strength: 1
+            base_agility: 1
+            base_intelligence: 1
+            defense: 1
+            tags: [ooze]
+            resistances: [blunt]
+            weaknesses: [fire, ice]
+
+        BANDIT:
+            base_health: 70
+            base_strength: 9
+            base_agility: 10
+            base_intelligence: 5
+            defense: 3
+            tags: [humanoid]
+            resistances: []
+            weaknesses: [magic]
+
+        WARLOCK:
+            base_health: 90
+            base_strength: 4
+            base_agility: 7
+            base_intelligence: 16
+            defense: 4
+            tags: [mage]
+            resistances: [magic]
+            weaknesses: [physical]
+
+        GOLEM:
+            base_health: 250
+            base_strength: 20
+            base_agility: 2
+            base_intelligence: 5
+            defense: 15
+            tags: [construct, earth]
+            resistances: [physical, poison]
+            weaknesses: [magic]
+
+        PHANTOM:
+            base_health: 50
+            base_strength: 7
+            base_agility: 12
+            base_intelligence: 12
+            defense: 2
+            tags: [spirit]
+            resistances: [physical]
+            weaknesses: [magic, holy]
+
+        DEMON:
+            base_health: 220
+            base_strength: 18
+            base_agility: 10
+            base_intelligence: 14
+            defense: 9
+            tags: [demon, magic]
+            resistances: [fire, dark]
+            weaknesses: [holy]
+
+        HYDRA:
+            base_health: 300
+            base_strength: 22
+            base_agility: 5
+            base_intelligence: 6
+            defense: 12
+            tags: [beast, poison]
+            resistances: [poison, physical]
+            weaknesses: [fire]
+
+        PHOENIX:
+            base_health: 200
+            base_strength: 15
+            base_agility: 22
+            base_intelligence: 12
+            defense: 6
+            tags: [bird, fire, flying]
+            resistances: [fire, magic]
+            weaknesses: [cold, water]
+
+        GRIFFIN:
+            base_health: 180
+            base_strength: 17
+            base_agility: 17
+            base_intelligence: 8
+            defense: 7
+            tags: [beast, flying]
+            resistances: [physical]
+            weaknesses: [magic]
+
+        WYVERN:
+            base_health: 220
+            base_strength: 18
+            base_agility: 14
+            base_intelligence: 10
+            defense: 9
+            tags: [dragon, flying]
+            resistances: [fire]
+            weaknesses: [magic, ice]
+
+        TREANT:
+            base_health: 250
+            base_strength: 12
+            base_agility: 4
+            base_intelligence: 14
+            defense: 10
+            tags: [plant, magic]
+            resistances: [physical, poison]
+            weaknesses: [fire, axe]
+
+        MINOTAUR:
+            base_health: 240
+            base_strength: 20
+            base_agility: 6
+            base_intelligence: 4
+            defense: 10
+            tags: [beast, brute]
+            resistances: [physical]
+            weaknesses: [magic]
+
+        MANTICORE:
+            base_health: 210
+            base_strength: 18
+            base_agility: 14
+            base_intelligence: 6
+            defense: 8
+            tags: [beast, poison]
+            resistances: [poison]
+            weaknesses: [ice]
+
+        BANSHEE:
+            base_health: 90
+            base_strength: 8
+            base_agility: 16
+            base_intelligence: 18
+            defense: 3
+            tags: [spirit, undead]
+            resistances: [magic, dark]
+            weaknesses: [holy, light]
+
+        SIREN:
+            base_health: 120
+            base_strength: 6
+            base_agility: 14
+            base_intelligence: 16
+            defense: 4
+            tags: [magic, water]
+            resistances: [water]
+            weaknesses: [physical]
+
+        YETI:
+            base_health: 260
+            base_strength: 22
+            base_agility: 8
+            base_intelligence: 5
+            defense: 11
+            tags: [beast, ice]
+            resistances: [cold]
+            weaknesses: [fire]
+
+        KRAKEN:
+            base_health: 350
+            base_strength: 25
+            base_agility: 6
+            base_intelligence: 9
+            defense: 14
+            tags: [beast, water, tentacle]
+            resistances: [water, poison]
+            weaknesses: [lightning]
+
+        SPECTER:
+            base_health: 70
+            base_strength: 5
+            base_agility: 18
+            base_intelligence: 20
+            defense: 3
+            tags: [spirit, ghost]
+            resistances: [physical, poison]
+            weaknesses: [magic, holy]
+
+        NAGA:
+            base_health: 160
+            base_strength: 14
+            base_agility: 10
+            base_intelligence: 12
+            defense: 6
+            tags: [reptile, magic]
+            resistances: [poison, water]
+            weaknesses: [ice, fire]
+
+    coeffs:
+        GOBLIN: { phys_coeff: 0.8, mag_coeff: 0.1 }
+        ORC: { phys_coeff: 1.0, mag_coeff: 0.2 }
+        DRAGON: { phys_coeff: 1.3, mag_coeff: 0.5 }
+        SKELETON: { phys_coeff: 0.6, mag_coeff: 0.1 }
+        ZOMBIE: { phys_coeff: 0.7, mag_coeff: 0.2 }
+        WOLF: { phys_coeff: 0.9, mag_coeff: 0.2 }
+        TROLL: { phys_coeff: 1.1, mag_coeff: 0.1 }
+        VAMPIRE: { phys_coeff: 1.0, mag_coeff: 0.4 }
+        GIANT_SPIDER: { phys_coeff: 0.8, mag_coeff: 0.1 }
+        ELEMENTAL: { phys_coeff: 0.4, mag_coeff: 1.2 }
+        LICH: { phys_coeff: 0.3, mag_coeff: 1.3 }
+        DARK_KNIGHT: { phys_coeff: 1.0, mag_coeff: 0.3 }
+        OGRE: { phys_coeff: 1.2, mag_coeff: 0.1 }
+        SLIME: { phys_coeff: 0.3, mag_coeff: 0.0 }
+        BANDIT: { phys_coeff: 0.85, mag_coeff: 0.2 }
+        WARLOCK: { phys_coeff: 0.2, mag_coeff: 1.1 }
+        GOLEM: { phys_coeff: 1.3, mag_coeff: 0.2 }
+        PHANTOM: { phys_coeff: 0.5, mag_coeff: 1.0 }
+        DEMON: { phys_coeff: 1.2, mag_coeff: 1.0 }
+        HYDRA: { phys_coeff: 1.1, mag_coeff: 0.5 }
+        PHOENIX: { phys_coeff: 0.7, mag_coeff: 1.0 }
+        GRIFFIN: { phys_coeff: 1.1, mag_coeff: 0.3 }
+        WYVERN: { phys_coeff: 1.2, mag_coeff: 0.4 }
+        TREANT: { phys_coeff: 0.9, mag_coeff: 0.8 }
+        MINOTAUR: { phys_coeff: 1.3, mag_coeff: 0.1 }
+        MANTICORE: { phys_coeff: 1.2, mag_coeff: 0.2 }
+        BANSHEE: { phys_coeff: 0.5, mag_coeff: 1.2 }
+        SIREN: { phys_coeff: 0.4, mag_coeff: 1.3 }
+        YETI: { phys_coeff: 1.3, mag_coeff: 0.2 }
+        KRAKEN: { phys_coeff: 1.4, mag_coeff: 0.3 }
+        SPECTER: { phys_coeff: 0.6, mag_coeff: 1.1 }
+        NAGA: { phys_coeff: 1.0, mag_coeff: 0.9 }
+
+    base_damage:
+        GOBLIN: 3
+        ORC: 7
+        DRAGON: 20
+        SKELETON: 2
+        ZOMBIE: 4
+        WOLF: 6
+        TROLL: 14
+        VAMPIRE: 10
+        GIANT_SPIDER: 5
+        ELEMENTAL: 8
+        LICH: 14
+        DARK_KNIGHT: 11
+        OGRE: 15
+        SLIME: 1
+        BANDIT: 7
+        WARLOCK: 9
+        GOLEM: 15
+        PHANTOM: 6
+        DEMON: 16
+        HYDRA: 16
+        PHOENIX: 17
+        GRIFFIN: 16
+        WYVERN: 18
+        TREANT: 11
+        MINOTAUR: 21
+        MANTICORE: 16
+        BANSHEE: 12
+        SIREN: 11
+        YETI: 21
+        KRAKEN: 22
+        SPECTER: 14
+        NAGA: 13
+
+    monster_tiers:
+        tier1:
+            name: "Новобранец"
+            description: "Лёгкие враги для первых испытаний"
+            monsters:
+                - GOBLIN
+                - SKELETON
+                - ZOMBIE
+                - SLIME
+                - WOLF
+
+        tier2:
+            name: "Ветеран"
+            description: "Опытные соперники средней сложности"
+            monsters:
+                - PHANTOM
+                - BANDIT
+                - ORC
+                - GIANT_SPIDER
+                - ELEMENTAL
+                - WARLOCK
+                - VAMPIRE
+                - SIREN
+                - BANSHEE
+                - SPECTER
+
+        tier3:
+            name: "Легенда"
+            description: "Эпические монстры для закалённых героев"
+            monsters:
+                - TROLL
+                - OGRE
+                - GRIFFIN
+                - TREANT
+                - MINOTAUR
+                - MANTICORE
+                - PHOENIX
+                - WYVERN
+                - YETI
+
+        tier4:
+            name: "Владыки"
+            description: "Только боссы‑владыки для настоящих чемпионов"
+            monsters:
+                - DRAGON
+                - GOLEM
+                - DEMON
+                - HYDRA
+                - KRAKEN
+                - NAGA

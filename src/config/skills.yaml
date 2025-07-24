@@ -1,0 +1,207 @@
+# src/config/skills.yaml
+
+################################################################################
+# ⛨  ВОИН
+################################################################################
+Shield Bash:
+    type: damage
+    target: enemy
+    trigger: always
+    power: 1.1
+    element: PHYSICAL
+    mana_cost: 0
+    effect: stun
+    duration: 1
+    cooldown: 2
+    description: "Оглушает врага ударом щитом, нанося урон."
+
+Cleave:
+    type: passive
+    trigger: always
+    effect: splash_damage
+    power: 0.2 # 20 % от авто‑урона соседним врагам
+    description: "Каждая обычная атака наносит 20 % урона всем другим врагам."
+
+Battle Roar:
+    type: buff
+    target: team
+    trigger: always
+    effect: increase_strength
+    duration: 3
+    cooldown: 9
+    power: 0.08
+    description: "Боевой рёв усиливает STR всей команды на 8 %."
+
+Iron Will:
+    type: buff
+    target: self
+    trigger: on_low_hp
+    effect: reduce_damage
+    power: 0.15
+    duration: 3
+    cooldown: 9
+    description: "При HP < 50 % уменьшает получаемый урон на 15 %."
+
+Whirlwind Slash:
+    type: damage
+    target: all_enemies
+    trigger: always
+    power: 0.9
+    element: PHYSICAL
+    mana_cost: 25
+    cooldown: 4
+    description: "Крутится и бьёт всех врагов."
+
+Taunt:
+    type: debuff
+    target: all_enemies
+    trigger: always
+    effect: provoke
+    power: -0.15
+    duration: 1
+    cooldown: 5
+    description: "Принуждает атаковать воина и снижает DEF других целей на 15 %."
+
+Last Stand:
+    type: passive
+    trigger: on_fatal_hit
+    effect: survive_one_turn
+    cooldown: 99999
+    description: "Раз за бой оставляет 1 HP вместо смерти."
+
+################################################################################
+# 🔥  МАГ
+################################################################################
+Fireball:
+    type: damage
+    target: enemy
+    trigger: always
+    power: 1.9
+    element: FIRE
+    mana_cost: 15
+    cooldown: 2
+    description: "Сильный огненный шар (≈2×INT)."
+
+Magic Barrier:
+    type: buff
+    target: self
+    trigger: always
+    effect: magic_shield
+    duration: 3
+    power: 0.25
+    mana_cost: 18
+    cooldown: 7
+    description: "Поглощает урон щитом в размере 25 % max HP."
+
+Chain Lightning:
+    type: damage
+    target: two_random_enemies
+    trigger: always
+    power: 1.0
+    secondary_power: 0.6
+    element: LIGHTNING
+    mana_cost: 18
+    cooldown: 3
+    description: "Бьёт током по двум целям: 100 % урона основной, 80 % вторичной."
+
+Mana Drain:
+    type: debuff
+    target: enemy
+    trigger: always
+    effect: steal_intelligence
+    power: 0.2
+    duration: 2
+    mana_cost: 14
+    cooldown: 3
+    description: "Восстанавливает себе 2 % INT в маны на 2 хода."
+
+Meteor:
+    type: damage
+    target: all_enemies
+    trigger: always
+    power: 1.6
+    element: FIRE
+    mana_cost: 55
+    effect: burn
+    duration: 2
+    cooldown: 7
+    description: "Сжигает поле боя метеором (≈2.3×INT) и накладывает burn на 2 хода."
+
+Time Warp:
+    type: utility
+    target: ally
+    trigger: always
+    effect: extra_turn
+    mana_cost: 20
+    cooldown: 6
+    description: "Дарует союзнику дополнительный ход."
+
+Arcane Mastery:
+    type: passive
+    trigger: always
+    effect: bonus_magic_damage
+    power: 0.01
+    description: "Пассивно повышает магический урон до +10 %."
+
+################################################################################
+# 🗡  РАЗБОЙНИК
+################################################################################
+Backstab:
+    type: damage
+    target: enemy
+    trigger: if_first
+    power: 3.0
+    element: PHYSICAL
+    mana_cost: 5
+    cooldown: 3
+    description: "Тройной урон (≈3×STR), если атакует первым."
+
+Shadowstep:
+    type: utility
+    target: self
+    trigger: always
+    effect: evade
+    duration: 1
+    mana_cost: 8
+    cooldown: 4
+    description: "100 % уклонение от следующей атаки."
+
+Poisoned Blade:
+    type: debuff
+    target: enemy
+    trigger: always
+    effect: poison
+    power: 0.13
+    duration: 5
+    mana_cost: 6
+    cooldown: 2
+    description: "Отравляет цель, нанося 13 % её max HP за ход."
+
+Assassinate:
+    type: damage
+    target: enemy
+    trigger: if_enemy_low_hp
+    power: 4.0
+    element: PHYSICAL
+    success_chance: 0.85
+    mana_cost: 20
+    cooldown: 3
+    description: "Попытка добить врага (≈4×STR) с шансом 85 %."
+
+Smoke Bomb:
+    type: buff
+    target: team
+    trigger: always
+    effect: increased_evasion
+    power: 0.45
+    duration: 3
+    mana_cost: 10
+    cooldown: 4
+    description: "Команда получает +45 % шанса уклонения на 3 хода."
+
+Evasion Mastery:
+    type: passive
+    trigger: always
+    effect: bonus_agility
+    power: 0.10
+    description: "Пассивно повышает ловкость на 10 %."

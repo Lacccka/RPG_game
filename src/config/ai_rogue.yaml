@@ -1,0 +1,51 @@
+# src/config/ai_rogue.yaml
+
+rogue:
+    # 1) Угроза (DPS) — аналогично воину, но под физику разбойника
+    threat:
+        use_accuracy: true
+        use_interval: true
+        resist_modifier: 0.6
+        weak_modifier: 1.4
+
+    # 2) Теговые веса
+    tag_weights:
+        humanoid: 1.0
+        undead: 1.1
+        beast: 1.0
+        demon: 1.2
+        default: 1.0
+
+    # 3) Учет ресурсов
+    resource:
+        consider_mana_regen: true
+
+    # 4) Утилиты каждого навыка
+    skills:
+        Backstab:
+            enabled: true
+            cd_weight: 1.0
+
+        Shadowstep:
+            enabled: true
+            hp_pct: 0.4 # использовать, если HP < 40%
+            cd_weight: 1.0
+
+        Poisoned Blade:
+            enabled: true
+            min_enemies: 1 # предпочесть при двух и более врагах
+            cd_weight: 1.0
+
+        Assassinate:
+            enabled: true
+            hp_pct: 0.3 # если у цели HP < 30%
+            cd_weight: 1.0
+
+        Smoke Bomb:
+            enabled: true
+            min_enemies: 1
+            cd_weight: 1.0
+
+        # пассивка
+        Evasion Mastery:
+            enabled: true

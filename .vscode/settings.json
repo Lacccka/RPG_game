@@ -1,0 +1,6 @@
+{
+    "cSpell.enabledFileTypes": {
+        "yaml": false
+    },
+    "python.analysis.extraPaths": ["./src"]
+}

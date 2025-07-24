@@ -1,0 +1,81 @@
+# src/config/characters.yaml
+
+characters:
+    WARRIOR:
+        display_name: "Воин"
+        base_health: 130
+        base_strength: 10
+        base_agility: 5
+        base_intelligence: 2
+        phys_coeff: 1.2
+        mag_coeff: 0.1
+        base_defense: 3 # базовая защита
+        base_accuracy: 0.9 # 90 % шанс попадения
+        base_crit_chance: 0.05 # 5 % шанс крита
+        base_dodge_chance: 0.015# 1.5 % шанс уклонения
+        base_mana: 40
+        mana_regen: 1
+        skills:
+            2:
+                - Cleave
+            3:
+                - Shield Bash
+            6:
+                - Battle Roar
+                - Iron Will
+            10:
+                - Whirlwind Slash
+                - Taunt
+                - Last Stand
+
+    MAGE:
+        display_name: "Маг"
+        base_health: 110
+        base_strength: 3
+        base_agility: 6
+        base_intelligence: 12
+        phys_coeff: 0.2
+        mag_coeff: 1.2
+        base_defense: 4
+        base_accuracy: 0.90
+        base_crit_chance: 0.12
+        base_dodge_chance: 0.03
+        base_mana: 140
+        mana_regen: 10
+        skills:
+            2:
+                - Fireball
+            4:
+                - Magic Barrier
+            6:
+                - Chain Lightning
+                - Mana Drain
+            10:
+                - Meteor
+                - Time Warp
+                - Arcane Mastery
+
+    ROGUE:
+        display_name: "Разбойник"
+        base_health: 150
+        base_strength: 19
+        base_agility: 14
+        base_intelligence: 4
+        phys_coeff: 1.2
+        mag_coeff: 0.3
+        base_defense: 6
+        base_accuracy: 0.92
+        base_crit_chance: 0.2
+        base_dodge_chance: 0.12
+        base_mana: 80
+        mana_regen: 12
+        skills:
+            3:
+                - Backstab
+            6:
+                - Shadowstep
+                - Poisoned Blade
+            10:
+                - Assassinate
+                - Smoke Bomb
+                - Evasion Mastery

@@ -1,0 +1,78 @@
+# config/ai_warrior.yaml — полный конфиг параметров для WarriorAI
+
+warrior:
+    # 1) Оценка угрозы (DPS) с учётом резистов, слабостей и тегов
+    threat:
+        use_accuracy: true # учитывать точность врага
+        use_interval: true # учитывать скорость атак (attack_interval)
+        big_dps_threshold: 4.0 # DPS ≥ этого числа считается «опасным»
+        resist_modifier: 0.5 # если в шаблоне есть resistance к физическому — DPS × 0.5
+        weak_modifier: 1.5 # если есть weakness к физическому — DPS × 1.5
+
+    # 2) Весовые коэффициенты по тегам (умножаются на итоговую угрозу)
+    tag_weights:
+        humanoid: 1.0
+        brute: 1.1
+        dragon: 1.3
+        flying: 1.0
+        fire: 1.0
+        undead: 1.2
+        beast: 1.1
+        giant: 1.2
+        mage: 0.9
+        magic: 0.9
+        elemental: 0.9
+        poison: 0.9
+        knight: 1.0
+        ooze: 0.7
+        water: 0.8
+        earth: 1.0
+        spirit: 0.8
+        demon: 1.4
+        bird: 1.0
+        plant: 1.0
+        reptile: 1.0
+        ghost: 0.8
+        tentacle: 0.8
+        ice: 0.9
+        default: 1.0
+
+    # 3) Учет ресурсов
+    resource:
+        consider_mana_regen: true # прикидывать манареген следующего хода
+
+    # 4) Параметры утилит для каждого скилла
+    skills:
+        "Battle Roar":
+            enabled: true
+            min_enemies: 1 # минимальное число врагов
+            boss_hp_pct: 1.5 # порог для «босса»: e.max_hp > 1.5 × user.max_hp
+            strength_pct: 0.08 # бафф +8% STR на каждого союзника
+            cd_weight: 1.0 # вес фактора 1/(cd+1)
+
+        "Iron Will":
+            enabled: true
+            hp_pct: 0.5 # триггер при HP < 50%
+            big_hit_pct: 0.5 # или после удара ≥ 50% от max_hp
+            shield_pct: 0.45 # даёт щит 45% от max_hp
+            cd_weight: 1.0
+
+        "Shield Bash":
+            enabled: true
+            base_str_pct: 1.1 # 110% от STR наносимого урона
+            danger_dps_thresh: 4.0 # DPS ≥ 4.0 считается опасным
+            danger_mult: 1.5 # при опасной угрозе приоритет ×1.5
+            cd_weight: 1.0
+
+        "Taunt":
+            enabled: true
+            acc_threshold: 0.6 # дразнить только точных врагов (>60%)
+            provoke_effect: "provoke" # не дразнить уже провоцированных
+            cd_weight: 1.0
+
+        "Whirlwind Slash":
+            enabled: true
+            min_enemies: 1 # минимум врагов для AoE
+            whirl_str_pct: 0.9 # 90% от STR × кол-во врагов (AOE)
+            compare_to_skill: "Shield Bash"
+            cd_weight: 1.0

@@ -1,0 +1,61 @@
+=== 📊 Общая статистика (tier 4, группа 1-3 монстра) ===
+Всего боёв: 1000
+Побед: 505, поражений: 495 (50.5%)
+Среднее HP после боя: 90.4/358
+Средний размер группы врагов: 2.05
+Всего врагов встречено: 2048
+Самая длинная полоса побед: 10 боёв (началась с боя #574, уровень 21)
+
+=== 🧟 Победы по составам групп ===
+GOLEM: 48 побед
+HYDRA: 47 побед
+NAGA: 46 побед
+DRAGON: 46 побед
+DEMON: 45 побед
+KRAKEN: 45 побед
+GOLEM, NAGA: 25 побед
+DEMON, NAGA: 16 побед
+DEMON, GOLEM: 15 побед
+KRAKEN, NAGA: 14 побед
+DEMON, KRAKEN: 13 побед
+DRAGON, NAGA: 12 побед
+HYDRA, NAGA: 11 побед
+GOLEM, KRAKEN: 10 побед
+HYDRA, KRAKEN: 10 побед
+DEMON, HYDRA: 9 побед
+DEMON, DEMON: 8 побед
+DRAGON, KRAKEN: 7 побед
+NAGA, NAGA: 6 побед
+DEMON, DRAGON: 6 побед
+DEMON, HYDRA, NAGA: 5 побед
+DEMON, GOLEM, NAGA: 5 побед
+DRAGON, GOLEM: 5 побед
+DRAGON, HYDRA: 4 побед
+GOLEM, HYDRA: 4 побед
+HYDRA, NAGA, NAGA: 3 побед
+DEMON, NAGA, NAGA: 3 побед
+GOLEM, HYDRA, KRAKEN: 3 побед
+DRAGON, NAGA, NAGA: 2 побед
+GOLEM, KRAKEN, KRAKEN: 2 побед
+GOLEM, GOLEM: 2 побед
+DRAGON, KRAKEN, NAGA: 2 побед
+GOLEM, HYDRA, NAGA: 2 побед
+GOLEM, NAGA, NAGA: 2 побед
+HYDRA, KRAKEN, NAGA: 2 побед
+DRAGON, HYDRA, NAGA: 2 побед
+KRAKEN, KRAKEN: 2 побед
+DRAGON, GOLEM, KRAKEN: 2 побед
+DEMON, DRAGON, NAGA: 1 побед
+DRAGON, DRAGON: 1 побед
+HYDRA, HYDRA, KRAKEN: 1 побед
+DEMON, GOLEM, HYDRA: 1 побед
+DEMON, GOLEM, GOLEM: 1 побед
+DEMON, DEMON, HYDRA: 1 побед
+GOLEM, KRAKEN, NAGA: 1 побед
+HYDRA, HYDRA: 1 побед
+NAGA, NAGA, NAGA: 1 побед
+DEMON, KRAKEN, NAGA: 1 побед
+DEMON, HYDRA, KRAKEN: 1 побед
+DEMON, DEMON, KRAKEN: 1 побед
+DEMON, DEMON, GOLEM: 1 побед
+DRAGON, GOLEM, NAGA: 1 побед
