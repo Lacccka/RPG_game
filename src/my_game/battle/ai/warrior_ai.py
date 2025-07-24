@@ -24,7 +24,6 @@ class WarriorAI(BaseAI):
         actor — Combatant, от имени которого играет ИИ.
         cfg — содержимое секции CONFIG["ai"]["warrior"], загруженное из ai_warrior.yaml.
         """
-        cfg = CONFIG["ai"]["warrior"]
         super().__init__(actor, cfg)
 
     def choose_action(

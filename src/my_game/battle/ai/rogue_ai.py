@@ -70,7 +70,6 @@ class RogueAI(BaseAI):
         actor — Combatant, от имени которого играет ИИ.
         cfg — секция CONFIG["ai"]["rogue"] из ai_rogue.yaml.
         """
-        cfg = CONFIG["ai"]["rogue"]
         super().__init__(actor, cfg)
 
     def choose_action(

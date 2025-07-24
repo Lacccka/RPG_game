@@ -25,7 +25,7 @@ class Combatant(ABC):
     strength: int
     agility: int
     intelligence: int
-    defense: int
+    defense: float
 
     # Опциональные параметры
     accuracy: float = 0.8
