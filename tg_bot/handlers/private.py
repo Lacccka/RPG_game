@@ -4,8 +4,6 @@ from aiogram import Router, F
 from aiogram.enums import ChatType
 from aiogram.types import (
     Message,
-    ReplyKeyboardMarkup,
-    KeyboardButton,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     CallbackQuery,
@@ -14,8 +12,14 @@ from aiogram.filters import CommandStart
 
 from ..repositories.db import Database
 from ..services import simulate_battle, store
+from ..keyboards import (
+    main_menu,
+    chars_menu,
+    shop_keyboard,
+    inventory_keyboard,
+)
 from my_game.characters.character_class import CharacterClass
-from my_game.items.item import GearItem, PotionItem
+from my_game.items.item import GearItem
 from my_game.config import CONFIG
 
 router = Router()
@@ -28,30 +32,6 @@ party_select: dict[tuple[int, int], list] = {}
 pending_battles: dict[tuple[int, int], list] = {}
 
 
-def main_menu() -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="Персонажи")],
-            [KeyboardButton(text="Магазин")],
-            [KeyboardButton(text="Инвентарь")],
-            [KeyboardButton(text="Отдых")],
-            [KeyboardButton(text="Бой")],
-        ],
-        resize_keyboard=True,
-    )
-
-
-def chars_menu() -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="Создать персонажа")],
-            [KeyboardButton(text="Отряд")],
-            [KeyboardButton(text="Назад")],
-        ],
-        resize_keyboard=True,
-    )
-
-
 @router.message(CommandStart())
 async def cmd_start(message: Message):
     db: Database = message.bot.db
@@ -62,7 +42,7 @@ async def cmd_start(message: Message):
     await message.answer("Добро пожаловать в RPG!", reply_markup=main_menu())
 
 
-@router.message(F.text == "Назад")
+@router.message(F.text == "⬅️ Назад")
 async def go_back(message: Message):
     active_shops.pop((message.from_user.id, message.chat.id), None)
     active_inventories.pop((message.from_user.id, message.chat.id), None)
@@ -70,37 +50,20 @@ async def go_back(message: Message):
     await message.answer("Главное меню", reply_markup=main_menu())
 
 
-@router.message(F.text == "Инвентарь")
+@router.message(F.text == "🎒 Инвентарь")
 async def show_inventory(message: Message):
     db: Database = message.bot.db
     key = (message.from_user.id, message.chat.id)
     items = await db.inventory.get_items(*key)
     active_inventories[key] = items
     if not items:
-        text = "Инвентарь пуст."
-    else:
-        lines = []
-        for i, it in enumerate(items):
-            if isinstance(it, GearItem):
-                lines.append(f"{i+1}. {it.name} ({it.slot.name})")
-            else:
-                desc = []
-                if it.heal:
-                    desc.append(f"HP+{it.heal}")
-                if it.mana:
-                    desc.append(f"MP+{it.mana}")
-                lines.append(f"{i+1}. {it.name} ({', '.join(desc)})")
-        text = "Ваш инвентарь:\n" + "\n".join(lines)
-        text += "\nВведите номер предмета (0 - выход)"
-    await message.answer(
-        text,
-        reply_markup=ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="Назад")]], resize_keyboard=True
-        ),
-    )
+        await message.answer("Инвентарь пуст.", reply_markup=main_menu())
+        return
+    text = "Ваш инвентарь:"
+    await message.answer(text, reply_markup=inventory_keyboard(items))
 
 
-@router.message(F.text == "Отдых")
+@router.message(F.text == "🛌 Отдых")
 async def rest_character(message: Message):
     db: Database = message.bot.db
     party_ids = await db.party.get_party(message.from_user.id, message.chat.id)
@@ -119,7 +82,7 @@ async def rest_character(message: Message):
     await message.answer("Отряд отдохнул и восстановлен.", reply_markup=main_menu())
 
 
-@router.message(F.text == "Персонажи")
+@router.message(F.text == "🧙 Персонажи")
 async def list_characters(message: Message):
     db: Database = message.bot.db
     chars = await db.characters.get_characters(message.from_user.id, message.chat.id)
@@ -134,7 +97,7 @@ async def list_characters(message: Message):
     await message.answer(text, reply_markup=chars_menu())
 
 
-@router.message(F.text == "Отряд")
+@router.message(F.text == "👥 Отряд")
 async def manage_party(message: Message):
     db: Database = message.bot.db
     chars = await db.characters.get_characters(message.from_user.id, message.chat.id)
@@ -162,7 +125,7 @@ async def show_party_selection(message: Message, chars, selected):
     await message.answer("Выберите до 3 героев:", reply_markup=kb)
 
 
-@router.message(F.text == "Создать персонажа")
+@router.message(F.text == "➕ Создать персонажа")
 async def choose_class(message: Message):
     buttons = [
         [InlineKeyboardButton(text=cls.display_name, callback_data=f"new:{cls.name}")]
@@ -216,7 +179,7 @@ async def save_party(query: CallbackQuery):
     await query.answer()
 
 
-@router.message(F.text == "Бой")
+@router.message(F.text == "⚔ Бой")
 async def start_battle(message: Message):
     db: Database = message.bot.db
     party_ids = await db.party.get_party(message.from_user.id, message.chat.id)
@@ -271,70 +234,80 @@ async def handle_battle_callback(query: CallbackQuery):
     await query.answer()
 
 
-@router.message(F.text == "Магазин")
+@router.message(F.text == "🏪 Магазин")
 async def show_shop(message: Message):
     db: Database = message.bot.db
     user = await db.users.get_user(message.from_user.id, message.chat.id)
     goods = store.available_potions() + store.available_gear()
     active_shops[(message.from_user.id, message.chat.id)] = goods
-    lines = [f"{i+1}. {g.name} — {g.price}g" for i, g in enumerate(goods)]
-    text = (
-        f"Ваше золото: {user.gold if user else 0}g\n"
-        "Введите номер товара для покупки, 0 — выход:\n" + "\n".join(lines)
-    )
-    await message.answer(text)
+    text = f"Ваше золото: {user.gold if user else 0}g"
+    await message.answer(text, reply_markup=shop_keyboard(goods))
 
 
-@router.message(lambda m: m.text and m.text.isdigit())
-async def handle_numeric_reply(message: Message):
-    key = (message.from_user.id, message.chat.id)
-    # --- Магазин ---
+@router.callback_query(F.data == "shop_exit")
+async def close_shop(query: CallbackQuery):
+    active_shops.pop((query.from_user.id, query.message.chat.id), None)
+    await query.message.answer("Вы вышли из магазина.", reply_markup=main_menu())
+    await query.answer()
+
+
+@router.callback_query(F.data.startswith("shop:"))
+async def buy_item_callback(query: CallbackQuery):
+    key = (query.from_user.id, query.message.chat.id)
     goods = active_shops.get(key)
-    if goods is not None:
-        choice = int(message.text)
-        if choice == 0:
-            active_shops.pop(key, None)
-            await message.answer("Вы вышли из магазина.", reply_markup=main_menu())
-            return
-        index = choice - 1
-        if index < 0 or index >= len(goods):
-            await message.answer("Неверный номер")
-            return
-        item = goods[index]
-        db: Database = message.bot.db
-        user = await db.users.get_user(message.from_user.id, message.chat.id)
-        if not user or not user.spend_gold(item.price):
-            await message.answer("Недостаточно золота")
-            return
-        await db.users.update_user(user, message.chat.id)
-        await db.inventory.add_item(user.id, message.chat.id, item)
-        await message.answer(f"Куплено: {item.name}")
+    if goods is None:
+        await query.answer()
         return
 
-    # --- Инвентарь ---
+    index = int(query.data.split(":", 1)[1])
+    if index < 0 or index >= len(goods):
+        await query.answer("Неверный номер", show_alert=True)
+        return
+    item = goods[index]
+    db: Database = query.message.bot.db
+    user = await db.users.get_user(query.from_user.id, query.message.chat.id)
+    if not user or not user.spend_gold(item.price):
+        await query.answer("Недостаточно золота", show_alert=True)
+        return
+    await db.users.update_user(user, query.message.chat.id)
+    await db.inventory.add_item(user.id, query.message.chat.id, item)
+    await query.message.answer(f"Куплено: {item.name}")
+    await query.answer()
+
+
+@router.callback_query(F.data == "inv_exit")
+async def close_inventory(query: CallbackQuery):
+    active_inventories.pop((query.from_user.id, query.message.chat.id), None)
+    await query.message.answer("Вы вышли из инвентаря.", reply_markup=main_menu())
+    await query.answer()
+
+
+@router.callback_query(F.data.startswith("inv:"))
+async def use_item_callback(query: CallbackQuery):
+    key = (query.from_user.id, query.message.chat.id)
     items = active_inventories.get(key)
     if items is None:
+        await query.answer()
         return
-    choice = int(message.text)
-    if choice == 0:
-        active_inventories.pop(key, None)
-        await message.answer("Вы вышли из инвентаря.", reply_markup=main_menu())
-        return
-    index = choice - 1
+    index = int(query.data.split(":", 1)[1])
     if index < 0 or index >= len(items):
-        await message.answer("Неверный номер")
+        await query.answer("Неверный номер", show_alert=True)
         return
     item = items[index]
-    db: Database = message.bot.db
-    chars = await db.characters.get_characters(message.from_user.id, message.chat.id)
+    db: Database = query.message.bot.db
+    chars = await db.characters.get_characters(
+        query.from_user.id, query.message.chat.id
+    )
     if not chars:
-        await message.answer("Нет персонажей")
+        await query.message.answer("Нет персонажей")
+        await query.answer()
         return
     pc = chars[0]
     if isinstance(item, GearItem):
         pc.equip_item(item)
     else:
         pc.consume_potion(item)
-    await db.characters.update_character(pc, message.chat.id)
-    await db.inventory.remove_item(item.db_id, message.chat.id)
-    await message.answer(f"Использовано: {item.name}")
+    await db.characters.update_character(pc, query.message.chat.id)
+    await db.inventory.remove_item(item.db_id, query.message.chat.id)
+    await query.message.answer(f"Использовано: {item.name}")
+    await query.answer()
