@@ -14,13 +14,16 @@ class ItemClass(Enum):
     WARRIOR = auto()
     MAGE = auto()
     ROGUE = auto()
+    SUPPORT = auto()
+    ARCHER = auto()
+    TANK = auto()
 
 
 class ItemQuality(Enum):
-    SHABBY = auto()
-    STURDY = auto()
-    RARE = auto()
-    MASTERWORK = auto()
-    LEGENDARY = auto()
-    RELIC = auto()
-    UNIQUE = auto()
+    RUSTIC = auto()  # «Скромное»
+    FINE = auto()  # «Изящное»
+    EXQUISITE = auto()  # «Изысканное»
+    EPIC = auto()  # «Эпосное»
+    MYTHIC = auto()  # «Мифическое»
+    RELIC = auto()  # «Реликтовое»
+    ETERNAL = auto()  # «Вечное»

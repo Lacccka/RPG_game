@@ -1,55 +1,336 @@
-quality_random_stats:
-    SHABBY: 0
-    STURDY: 1
-    RARE: 1
-    MASTERWORK: 2
-    LEGENDARY: 3
-    RELIC: 4
-    UNIQUE: 5
+# ————————— Настройка качеств —————————
+quality_tiers:
+    RUSTIC:
+        display_name: "Скромное"
+        random_stats_count: 0
+    FINE:
+        display_name: "Изящное"
+        random_stats_count: 1
+    EXQUISITE:
+        display_name: "Изысканное"
+        random_stats_count: 2
+    EPIC:
+        display_name: "Эпосное"
+        random_stats_count: 3
+    MYTHIC:
+        display_name: "Мифическое"
+        random_stats_count: 4
+    RELIC:
+        display_name: "Реликтовое"
+        random_stats_count: 5
+    ETERNAL:
+        display_name: "Вечное"
+        random_stats_count: 6
 
+class_labels:
+    WARRIOR: "Воин"
+    MAGE: "Маг"
+    ROGUE: "Убийца"
+    SUPPORT: "Поддержка"
+    ARCHER: "Стрелок"
+    TANK: "Танк"
+
+# ————————— Товары магазина —————————
 items:
-    Iron Helm:
-        quality: STURDY
+    # ——— Голова ———
+    Helm of Thunder:
+        quality: EPIC
         slot: HEAD
         classes: [WARRIOR]
-        price: 40
-        base_stats:
-            defense: 2
-        possible_stats:
-            - { health: 10 }
-            - { strength: 1 }
+        price: 180
+        static_stats:
+            defense: 4
+            strength: 2
+        random_stats_pool:
+            - { health: 20 }
+            - { block_chance: 0.05 }
             - { crit_chance: 0.02 }
-    Apprentice Hood:
-        quality: STURDY
+
+    Hood of Whispers:
+        quality: EXQUISITE
+        slot: HEAD
+        classes: [ROGUE]
+        price: 140
+        static_stats:
+            agility: 3
+            dodge_chance: 0.03
+        random_stats_pool:
+            - { speed: 1 }
+            - { crit_chance: 0.04 }
+            - { health: 10 }
+
+    Circlet of Insight:
+        quality: MYTHIC
         slot: HEAD
         classes: [MAGE]
-        price: 40
-        base_stats:
-            intelligence: 2
-        possible_stats:
-            - { mana: 10 }
+        price: 220
+        static_stats:
+            intelligence: 4
+            mana: 20
+        random_stats_pool:
+            - { spell_power: 6 }
             - { crit_chance: 0.03 }
-    Leather Boots:
-        quality: SHABBY
-        slot: BOOTS
+            - { cooldown_reduction: 0.04 }
+
+    # ——— Грудь ———
+    Breastplate of Fury:
+        quality: MYTHIC
+        slot: CHEST
+        classes: [WARRIOR]
+        price: 300
+        static_stats:
+            defense: 8
+            strength: 3
+        random_stats_pool:
+            - { block_chance: 0.07 }
+            - { health: 30 }
+            - { strength: 2 }
+
+    Shadecloak:
+        quality: EPIC
+        slot: CHEST
         classes: [ROGUE]
-        price: 25
-        base_stats:
-            agility: 1
-        possible_stats:
-            - { dodge_chance: 0.02 }
+        price: 240
+        static_stats:
+            agility: 4
+            dodge_chance: 0.05
+        random_stats_pool:
+            - { speed: 1 }
+            - { crit_chance: 0.05 }
+            - { health: 15 }
+
+    Robes of the Archmage:
+        quality: RELIC
+        slot: CHEST
+        classes: [MAGE]
+        price: 400
+        static_stats:
+            intelligence: 6
+            mana: 40
+        random_stats_pool:
+            - { spell_power: 10 }
+            - { mana: 20 }
+            - { cooldown_reduction: 0.06 }
+
+    # ——— Руки ———
+    Gauntlets of the Colossus:
+        quality: EPIC
+        slot: HANDS
+        classes: [WARRIOR]
+        price: 160
+        static_stats:
+            strength: 3
+        random_stats_pool:
+            - { health: 15 }
+            - { block_chance: 0.05 }
+            - { crit_chance: 0.02 }
+
+    Thief’s Grips:
+        quality: EXQUISITE
+        slot: HANDS
+        classes: [ROGUE]
+        price: 120
+        static_stats:
+            agility: 2
+            crit_chance: 0.03
+        random_stats_pool:
+            - { speed: 1 }
+            - { dodge_chance: 0.04 }
+            - { health: 10 }
+
+    Mystic Bracers:
+        quality: EPIC
+        slot: HANDS
+        classes: [MAGE]
+        price: 180
+        static_stats:
+            intelligence: 3
+            mana: 15
+        random_stats_pool:
+            - { spell_power: 5 }
+            - { crit_chance: 0.03 }
+            - { mana: 10 }
+
+    # ——— Ноги ———
+    Greaves of Endurance:
+        quality: MYTHIC
+        slot: LEGS
+        classes: [WARRIOR]
+        price: 200
+        static_stats:
+            defense: 3
+            health: 25
+        random_stats_pool:
+            - { strength: 2 }
+            - { block_chance: 0.04 }
             - { speed: 1 }
 
+    Shadowstep Legguards:
+        quality: EPIC
+        slot: LEGS
+        classes: [ROGUE]
+        price: 170
+        static_stats:
+            agility: 3
+            speed: 1
+        random_stats_pool:
+            - { dodge_chance: 0.05 }
+            - { crit_chance: 0.04 }
+            - { health: 10 }
+
+    Enchanted Trousers:
+        quality: EXQUISITE
+        slot: LEGS
+        classes: [MAGE]
+        price: 150
+        static_stats:
+            intelligence: 2
+            mana: 20
+        random_stats_pool:
+            - { spell_power: 4 }
+            - { mana: 10 }
+            - { cooldown_reduction: 0.03 }
+
+    # ——— Ботинки ———
+    Boots of the Vanguard:
+        quality: RELIC
+        slot: BOOTS
+        classes: [WARRIOR]
+        price: 220
+        static_stats:
+            speed: 2
+            defense: 2
+        random_stats_pool:
+            - { block_chance: 0.05 }
+            - { strength: 1 }
+            - { health: 15 }
+
+    Whisperstep Boots:
+        quality: MYTHIC
+        slot: BOOTS
+        classes: [ROGUE]
+        price: 200
+        static_stats:
+            speed: 3
+            dodge_chance: 0.04
+        random_stats_pool:
+            - { crit_chance: 0.05 }
+            - { agility: 1 }
+            - { health: 10 }
+
+    Sandals of Serendipity:
+        quality: EXQUISITE
+        slot: BOOTS
+        classes: [MAGE]
+        price: 140
+        static_stats:
+            mana: 15
+            speed: 1
+        random_stats_pool:
+            - { spell_power: 3 }
+            - { mana: 10 }
+            - { cooldown_reduction: 0.02 }
+
+    # ——— Оружие ———
+    Blade of the Colossus:
+        quality: RELIC
+        slot: WEAPON
+        classes: [WARRIOR]
+        price: 350
+        static_stats:
+            strength: 6
+            crit_chance: 0.02
+        random_stats_pool:
+            - { health: 20 }
+            - { block_chance: 0.05 }
+            - { strength: 2 }
+
+    Dagger of Midnight:
+        quality: MYTHIC
+        slot: WEAPON
+        classes: [ROGUE]
+        price: 300
+        static_stats:
+            agility: 5
+            crit_chance: 0.05
+        random_stats_pool:
+            - { dodge_chance: 0.03 }
+            - { speed: 1 }
+            - { health: 15 }
+
+    Staff of the Infinite:
+        quality: ETERNAL
+        slot: WEAPON
+        classes: [MAGE]
+        price: 500
+        static_stats:
+            intelligence: 7
+            mana: 50
+        random_stats_pool:
+            - { spell_power: 12 }
+            - { cooldown_reduction: 0.07 }
+            - { crit_chance: 0.04 }
+
+    # —— ЗАГОТОВКИ ДЛЯ БУДУЩИХ КЛАССОВ ——
+    Wyldcaller’s Crown:
+        quality: EPIC
+        slot: HEAD
+        classes: [SUPPORT]
+        price: 210
+        static_stats:
+            healing_power: 5
+        random_stats_pool:
+            - { mana: 15 }
+            - { cooldown_reduction: 0.04 }
+            - { spell_power: 3 }
+
+    Hunter’s Visor:
+        quality: EXQUISITE
+        slot: HEAD
+        classes: [ARCHER]
+        price: 160
+        static_stats:
+            agility: 3
+            crit_chance: 0.03
+        random_stats_pool:
+            - { speed: 1 }
+            - { dodge_chance: 0.02 }
+            - { strength: 1 }
+
+    Bulwark Helm:
+        quality: EPIC
+        slot: HEAD
+        classes: [TANK]
+        price: 230
+        static_stats:
+            defense: 6
+            block_chance: 0.05
+        random_stats_pool:
+            - { health: 25 }
+            - { strength: 1 }
+            - { defense: 2 }
+
+# ————————— Зелья —————————
 potions:
-    - name: Small Healing Potion
+    - name: Flask of Minor Restoration
       heal: 20
       price: 10
-    - name: Strong Healing Potion
+    - name: Elixir of Vigor
       heal: 50
       price: 25
-    - name: Small Mana Potion
+    - name: Draught of Renewal
+      heal: 100
+      price: 60
+    - name: Potion of Mana Spark
       mana: 20
       price: 10
-    - name: Strong Mana Potion
+    - name: Elixir of Clarity
       mana: 50
       price: 25
+    - name: Mana Draught of the Archmage
+      mana: 100
+      price: 60
+    - name: Elixir of Balance
+      heal: 50
+      mana: 50
+      price: 70

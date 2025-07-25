@@ -23,9 +23,17 @@ from my_game.items.store import Store
 from my_game.items.item import GearItem, PotionItem
 from my_game.config import CONFIG
 
-# Хранилище игроков: id → Player
+# ——— Магазин ———
 players: Dict[int, Player] = {}
 store = Store()
+
+# Подгружаем локализации из gear.yaml
+_gear_cfg = CONFIG.get("gear", {})
+QUALITY_NAMES = {
+    q_name: info.get("display_name", q_name)
+    for q_name, info in _gear_cfg.get("quality_tiers", {}).items()
+}
+CLASS_LABELS = _gear_cfg.get("class_labels", {})
 
 
 def create_player():
@@ -47,8 +55,6 @@ def create_character():
     try:
         pid = prompt_int("Введите ID игрока")
         player = players[pid]
-        # char_name = prompt_str("Введите имя персонажа")
-        char_name = "Leon"
     except (ValueError, KeyError) as e:
         print("❌", e)
         return
@@ -63,7 +69,7 @@ def create_character():
         "Доступные классы:",
     )
 
-    pc = player.create_character(char_name, cls)
+    pc = player.create_character("Leon", cls)
     print(
         f"✅ Персонаж {pc.name!r} создан: класс {cls.display_name}, "
         f"HP={pc.health}, STR={pc.strength}, AGI={pc.agility}, INT={pc.intelligence}."
@@ -133,10 +139,15 @@ def shop():
     print(f"\n💰 Ваше золото: {player.gold}")
     for idx, item in enumerate(goods, 1):
         if isinstance(item, GearItem):
+            # Локализуем качество и список классов
+            q_ru = QUALITY_NAMES.get(item.quality.name, item.quality.name)
+            classes_ru = ", ".join(
+                CLASS_LABELS.get(c.name, c.name) for c in item.allowed_classes
+            )
             stats = ", ".join(f"{k}+{v}" for k, v in item.stats.items())
             print(
-                f"{idx}. {item.name} [{item.quality.name}] ({item.slot.name}) "
-                f"{stats} — {item.price}g"
+                f"{idx}. {item.name} [{q_ru} • {classes_ru}] "
+                f"({item.slot.name}) {stats} — {item.price}g"
             )
         else:
             desc = []
@@ -167,14 +178,12 @@ def fight():
         print("❌", e)
         return
 
-    # Выбираем героя
     pc = choose_from_list(
         player.characters,
         lambda c: f"{c.name} (lvl {c.level}, HP {c.health}/{c.max_health})",
         "Доступные персонажи:",
     )
 
-    # Выбираем тир и генерируем группу монстров
     tiers = CONFIG["monsters"]["monster_tiers"]
     tier_keys = ["tier1", "tier2", "tier3", "tier4"]
     sel = choose_from_list(
@@ -194,7 +203,6 @@ def fight():
     round_num = 1
     while pc.is_alive and any(m.is_alive for m in enemies):
         print(f"=== Раунд {round_num} ===")
-        # Сортируем по инициативе: agility + немного случайности
         order = [p for p in participants if p.is_alive]
         order.sort(key=lambda x: x.agility + random() * 0.1, reverse=True)
 
@@ -210,13 +218,11 @@ def fight():
         round_num += 1
         print()
 
-    # Итог
     if pc.is_alive:
         base = CONFIG["growth"]["xp_rewards"][f"tier{tier}"]
         count = len(enemies)
         reward = base * count * 1.2 if count > 1 else base
         pc.add_exp(reward)
-        print(f"🎉 Победа! {pc.name!r} получает {reward} XP")
         gold = int(reward // 10)
         pc.owner.add_gold(gold)
         print(f"🎉 Победа! {pc.name!r} получает {reward} XP и {gold} золота")
