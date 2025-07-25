@@ -19,10 +19,13 @@ from my_game.utils.cli_utils import (
 )
 from my_game.utils.monster_utils import generate_enemies_for_tier
 from my_game.battle.dispatcher import take_turn as ai_take_turn
+from my_game.items.store import Store
+from my_game.items.item import GearItem, PotionItem
 from my_game.config import CONFIG
 
 # Хранилище игроков: id → Player
 players: Dict[int, Player] = {}
+store = Store()
 
 
 def create_player():
@@ -112,6 +115,48 @@ def rest():
     print(f"💤 {pc.name} полностью восстановлен: HP={pc.health}/{pc.max_health}.")
 
 
+def shop():
+    try:
+        pid = prompt_int("Введите ID игрока")
+        player = players[pid]
+    except (ValueError, KeyError) as e:
+        print("❌", e)
+        return
+
+    gear = store.available_gear()
+    potions = store.available_potions()
+    goods = gear + potions
+    if not goods:
+        print("ℹ️ Магазин пуст.")
+        return
+
+    print(f"\n💰 Ваше золото: {player.gold}")
+    for idx, item in enumerate(goods, 1):
+        if isinstance(item, GearItem):
+            stats = ", ".join(f"{k}+{v}" for k, v in item.stats.items())
+            print(
+                f"{idx}. {item.name} [{item.quality.name}] ({item.slot.name}) "
+                f"{stats} — {item.price}g"
+            )
+        else:
+            desc = []
+            if item.heal:
+                desc.append(f"HP+{item.heal}")
+            if item.mana:
+                desc.append(f"MP+{item.mana}")
+            print(f"{idx}. {item.name} ({', '.join(desc)}) — {item.price}g")
+
+    choice = prompt_int("Купить номер (0 - выход)", 0)
+    if choice <= 0 or choice > len(goods):
+        return
+    item = goods[choice - 1]
+    if not player.spend_gold(item.price):
+        print("Недостаточно золота!")
+        return
+    player.add_item(item)
+    print(f"🛒 Куплено: {item.name}")
+
+
 def fight():
     try:
         pid = prompt_int("Введите ID игрока")
@@ -172,6 +217,9 @@ def fight():
         reward = base * count * 1.2 if count > 1 else base
         pc.add_exp(reward)
         print(f"🎉 Победа! {pc.name!r} получает {reward} XP")
+        gold = int(reward // 10)
+        pc.owner.add_gold(gold)
+        print(f"🎉 Победа! {pc.name!r} получает {reward} XP и {gold} золота")
     else:
         print(f"☠️  Поражение... {pc.name!r} пал в бою.")
 
@@ -183,7 +231,8 @@ def main():
         "3": ("Показать персонажей", list_characters),
         "4": ("Бой с монстрами", fight),
         "5": ("Отдохнуть", rest),
-        "6": ("Выход", exit_program),
+        "6": ("Магазин", shop),
+        "7": ("Выход", exit_program),
     }
 
     while True:

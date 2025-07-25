@@ -13,6 +13,7 @@ _STATIC_FILES = {
     "skills": "skills.yaml",
     "growth": "growth.yaml",
     "battle_rules": "battle_rules.yaml",
+    "gear": "gear.yaml",
 }
 
 CONFIG: dict[str, dict] = {}

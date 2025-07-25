@@ -1,0 +1,55 @@
+quality_random_stats:
+    SHABBY: 0
+    STURDY: 1
+    RARE: 1
+    MASTERWORK: 2
+    LEGENDARY: 3
+    RELIC: 4
+    UNIQUE: 5
+
+items:
+    Iron Helm:
+        quality: STURDY
+        slot: HEAD
+        classes: [WARRIOR]
+        price: 40
+        base_stats:
+            defense: 2
+        possible_stats:
+            - { health: 10 }
+            - { strength: 1 }
+            - { crit_chance: 0.02 }
+    Apprentice Hood:
+        quality: STURDY
+        slot: HEAD
+        classes: [MAGE]
+        price: 40
+        base_stats:
+            intelligence: 2
+        possible_stats:
+            - { mana: 10 }
+            - { crit_chance: 0.03 }
+    Leather Boots:
+        quality: SHABBY
+        slot: BOOTS
+        classes: [ROGUE]
+        price: 25
+        base_stats:
+            agility: 1
+        possible_stats:
+            - { dodge_chance: 0.02 }
+            - { speed: 1 }
+
+potions:
+    - name: Small Healing Potion
+      heal: 20
+      price: 10
+    - name: Strong Healing Potion
+      heal: 50
+      price: 25
+    - name: Small Mana Potion
+      mana: 20
+      price: 10
+    - name: Strong Mana Potion
+      mana: 50
+      price: 25
