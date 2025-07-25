@@ -1,7 +1,7 @@
 from __future__ import annotations
 import io
 import contextlib
-from random import random
+import random
 from typing import Tuple
 from typing import Sequence
 
@@ -44,7 +44,7 @@ def simulate_battle(
         while any(h.is_alive for h in party) and any(m.is_alive for m in enemies):
             print(f"=== Раунд {round_num} ===")
             order = [p for p in participants if p.is_alive]
-            order.sort(key=lambda x: x.agility + random() * 0.1, reverse=True)
+            order.sort(key=lambda x: x.agility + random.random() * 0.1, reverse=True)
             for actor in order:
                 if actor in party:
                     ai_take_turn(actor, [m for m in enemies if m.is_alive])
