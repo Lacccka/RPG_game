@@ -8,6 +8,7 @@ from aiogram.types import (
     KeyboardButton,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    CallbackQuery,
 )
 from aiogram.filters import CommandStart
 
@@ -25,6 +26,8 @@ def main_menu() -> ReplyKeyboardMarkup:
         keyboard=[
             [KeyboardButton(text="Персонажи")],
             [KeyboardButton(text="Магазин")],
+            [KeyboardButton(text="Инвентарь")],
+            [KeyboardButton(text="Отдых")],
             [KeyboardButton(text="Бой")],
         ],
         resize_keyboard=True,
@@ -54,6 +57,37 @@ async def cmd_start(message: Message):
 @router.message(F.text == "Назад")
 async def go_back(message: Message):
     await message.answer("Главное меню", reply_markup=main_menu())
+
+
+@router.message(F.text == "Инвентарь")
+async def show_inventory(message: Message):
+    db: Database = message.bot.db
+    items = await db.inventory.get_items(message.from_user.id, message.chat.id)
+    if not items:
+        text = "Инвентарь пуст."
+    else:
+        lines = [f"{i+1}. {it.name}" for i, it in enumerate(items)]
+        text = "Ваш инвентарь:\n" + "\n".join(lines)
+    await message.answer(
+        text,
+        reply_markup=ReplyKeyboardMarkup(
+            keyboard=[[KeyboardButton(text="Назад")]], resize_keyboard=True
+        ),
+    )
+
+
+@router.message(F.text == "Отдых")
+async def rest_character(message: Message):
+    db: Database = message.bot.db
+    chars = await db.characters.get_characters(message.from_user.id, message.chat.id)
+    if not chars:
+        await message.answer("Сначала создайте персонажа.", reply_markup=main_menu())
+        return
+    pc = chars[0]
+    pc.health = pc.max_health
+    pc.mana = pc.base_mana
+    await db.characters.update_character(pc, message.chat.id)
+    await message.answer(f"{pc.name} полностью восстановлен.", reply_markup=main_menu())
 
 
 @router.message(F.text == "Персонажи")
@@ -120,10 +154,35 @@ async def show_shop(message: Message):
     user = await db.users.get_user(message.from_user.id, message.chat.id)
     goods = store.available_potions() + store.available_gear()
     lines = [f"{i+1}. {g.name} — {g.price}g" for i, g in enumerate(goods)]
+    buttons = [
+        [InlineKeyboardButton(text=f"Купить {i+1}", callback_data=f"buy:{i}")]
+        for i in range(len(goods))
+    ]
+    buttons.append([InlineKeyboardButton(text="Назад", callback_data="shop_back")])
+    kb = InlineKeyboardMarkup(inline_keyboard=buttons)
     text = f"Ваше золото: {user.gold if user else 0}g\nДоступно:\n" + "\n".join(lines)
-    await message.answer(
-        text,
-        reply_markup=ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="Назад")]], resize_keyboard=True
-        ),
-    )
+    await message.answer(text, reply_markup=kb)
+
+
+@router.callback_query(F.data.startswith("buy:"))
+async def buy_item(query: CallbackQuery):
+    db: Database = query.message.bot.db
+    index = int(query.data.split(":", 1)[1])
+    goods = store.available_potions() + store.available_gear()
+    if index < 0 or index >= len(goods):
+        await query.answer("Ошибка", show_alert=True)
+        return
+    item = goods[index]
+    user = await db.users.get_user(query.from_user.id, query.message.chat.id)
+    if not user or not user.spend_gold(item.price):
+        await query.answer("Недостаточно золота", show_alert=True)
+        return
+    await db.users.update_user(user, query.message.chat.id)
+    await db.inventory.add_item(user.id, query.message.chat.id, item)
+    await query.answer(f"Куплено: {item.name}", show_alert=True)
+
+
+@router.callback_query(F.data == "shop_back")
+async def shop_back(query: CallbackQuery):
+    await query.message.answer("Главное меню", reply_markup=main_menu())
+    await query.answer()
