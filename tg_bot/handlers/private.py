@@ -304,7 +304,13 @@ async def use_item_callback(query: CallbackQuery):
         return
     pc = chars[0]
     if isinstance(item, GearItem):
-        pc.equip_item(item)
+        try:
+            replaced = pc.equip_item(item)
+        except ValueError as e:
+            await query.answer(str(e), show_alert=True)
+            return
+        if replaced and pc.owner:
+            await db.inventory.add_item(pc.owner.id, query.message.chat.id, replaced)
     else:
         pc.consume_potion(item)
     await db.characters.update_character(pc, query.message.chat.id)
