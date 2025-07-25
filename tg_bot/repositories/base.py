@@ -44,6 +44,9 @@ class AbstractInventoryRepo(ABC):
     @abstractmethod
     async def add_item(self, user_id: int, chat_id: int, item) -> None: ...
 
+    @abstractmethod
+    async def remove_item(self, item_id: int, chat_id: int) -> None: ...
+
 
 class AbstractPartyRepo(ABC):
     @abstractmethod

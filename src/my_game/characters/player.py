@@ -39,3 +39,7 @@ class Player:
 
     def add_item(self, item) -> None:
         self.inventory.append(item)
+
+    def remove_item(self, item) -> None:
+        if item in self.inventory:
+            self.inventory.remove(item)

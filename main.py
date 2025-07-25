@@ -168,6 +168,55 @@ def shop():
     print(f"🛒 Куплено: {item.name}")
 
 
+def inventory():
+    try:
+        pid = prompt_int("Введите ID игрока")
+        player = players[pid]
+    except (ValueError, KeyError) as e:
+        print("❌", e)
+        return
+
+    if not player.inventory:
+        print("Инвентарь пуст.")
+        return
+
+    for idx, item in enumerate(player.inventory, 1):
+        if isinstance(item, GearItem):
+            print(f"{idx}. {item.name} ({item.slot.name})")
+        else:
+            desc = []
+            if item.heal:
+                desc.append(f"HP+{item.heal}")
+            if item.mana:
+                desc.append(f"MP+{item.mana}")
+            print(f"{idx}. {item.name} ({', '.join(desc)})")
+
+    choice = prompt_int("Использовать/надеть номер (0 - выход)", 0)
+    if choice <= 0 or choice > len(player.inventory):
+        return
+    item = player.inventory.pop(choice - 1)
+
+    if not player.characters:
+        print("У игрока нет персонажей.")
+        player.add_item(item)
+        return
+
+    pc = choose_from_list(
+        player.characters,
+        lambda c: f"{c.name} (HP {c.health}/{c.max_health})",
+        "Выберите персонажа:",
+    )
+
+    if isinstance(item, GearItem):
+        replaced = pc.equip_item(item)
+        if replaced:
+            player.add_item(replaced)
+        print(f"🛡 {pc.name} экипировал {item.name} в слот {item.slot.name}")
+    else:
+        pc.consume_potion(item)
+        print(f"🧪 {pc.name} использовал {item.name}")
+
+
 def fight():
     try:
         pid = prompt_int("Введите ID игрока")
@@ -238,7 +287,8 @@ def main():
         "4": ("Бой с монстрами", fight),
         "5": ("Отдохнуть", rest),
         "6": ("Магазин", shop),
-        "7": ("Выход", exit_program),
+        "7": ("Инвентарь", inventory),
+        "8": ("Выход", exit_program),
     }
 
     while True:

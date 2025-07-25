@@ -8,6 +8,8 @@ from .character_class import CharacterClass
 from ..battle.enums import Element, DamageSource, CritType
 from ..battle.damage import check_hit, calc_damage
 from ..battle.status import before_action
+from ..items.item import GearItem, PotionItem
+from ..items.enums import ItemSlot, ItemClass
 
 if TYPE_CHECKING:
     from .player import Player
@@ -31,6 +33,9 @@ class PlayerCharacter(Combatant):
 
     # Для расчёта при повышении уровня
     _growth: dict = field(default_factory=dict, init=False)
+
+    # экипировка по слотам
+    equipment: dict[ItemSlot, GearItem] = field(default_factory=dict, init=False)
 
     def __post_init__(self):
         super().__post_init__()
@@ -219,3 +224,37 @@ class PlayerCharacter(Combatant):
         while self.exp >= self.exp_to_next():
             self.exp -= self.exp_to_next()
             self.level_up()
+
+    # --- Items management -------------------------------------------------
+    def equip_item(self, item: GearItem) -> GearItem | None:
+        """Equip a gear item and return replaced item if any."""
+        if not self.char_class:
+            raise ValueError("Character class undefined")
+        try:
+            cls = ItemClass[self.char_class.name]
+        except KeyError:
+            raise ValueError("Unsupported character class for items")
+
+        if item.allowed_classes and cls not in item.allowed_classes:
+            raise ValueError("Item cannot be equipped by this class")
+
+        prev = self.equipment.get(item.slot)
+        if prev:
+            for stat, val in prev.stats.items():
+                attr = "max_health" if stat == "health" else stat
+                if hasattr(self, attr):
+                    setattr(self, attr, getattr(self, attr) - val)
+
+        for stat, val in item.stats.items():
+            attr = "max_health" if stat == "health" else stat
+            if hasattr(self, attr):
+                setattr(self, attr, getattr(self, attr) + val)
+        self.equipment[item.slot] = item
+        return prev
+
+    def consume_potion(self, potion: PotionItem) -> None:
+        """Apply effects of potion to this character."""
+        if potion.heal:
+            self.health = min(self.max_health, self.health + potion.heal)
+        if potion.mana:
+            self.mana = min(self.base_mana, self.mana + potion.mana)

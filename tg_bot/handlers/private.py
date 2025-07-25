@@ -15,6 +15,7 @@ from aiogram.filters import CommandStart
 from ..repositories.db import Database
 from ..services import simulate_battle, store
 from my_game.characters.character_class import CharacterClass
+from my_game.items.item import GearItem, PotionItem
 from my_game.config import CONFIG
 
 router = Router()
@@ -22,6 +23,7 @@ router = Router()
 router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 active_shops: dict[tuple[int, int], list] = {}
+active_inventories: dict[tuple[int, int], list] = {}
 party_select: dict[tuple[int, int], list] = {}
 pending_battles: dict[tuple[int, int], list] = {}
 
@@ -63,6 +65,7 @@ async def cmd_start(message: Message):
 @router.message(F.text == "Назад")
 async def go_back(message: Message):
     active_shops.pop((message.from_user.id, message.chat.id), None)
+    active_inventories.pop((message.from_user.id, message.chat.id), None)
     party_select.pop((message.from_user.id, message.chat.id), None)
     await message.answer("Главное меню", reply_markup=main_menu())
 
@@ -70,12 +73,25 @@ async def go_back(message: Message):
 @router.message(F.text == "Инвентарь")
 async def show_inventory(message: Message):
     db: Database = message.bot.db
-    items = await db.inventory.get_items(message.from_user.id, message.chat.id)
+    key = (message.from_user.id, message.chat.id)
+    items = await db.inventory.get_items(*key)
+    active_inventories[key] = items
     if not items:
         text = "Инвентарь пуст."
     else:
-        lines = [f"{i+1}. {it.name}" for i, it in enumerate(items)]
+        lines = []
+        for i, it in enumerate(items):
+            if isinstance(it, GearItem):
+                lines.append(f"{i+1}. {it.name} ({it.slot.name})")
+            else:
+                desc = []
+                if it.heal:
+                    desc.append(f"HP+{it.heal}")
+                if it.mana:
+                    desc.append(f"MP+{it.mana}")
+                lines.append(f"{i+1}. {it.name} ({', '.join(desc)})")
         text = "Ваш инвентарь:\n" + "\n".join(lines)
+        text += "\nВведите номер предмета (0 - выход)"
     await message.answer(
         text,
         reply_markup=ReplyKeyboardMarkup(
@@ -270,26 +286,55 @@ async def show_shop(message: Message):
 
 
 @router.message(lambda m: m.text and m.text.isdigit())
-async def handle_shop_reply(message: Message):
+async def handle_numeric_reply(message: Message):
     key = (message.from_user.id, message.chat.id)
+    # --- Магазин ---
     goods = active_shops.get(key)
-    if goods is None:
+    if goods is not None:
+        choice = int(message.text)
+        if choice == 0:
+            active_shops.pop(key, None)
+            await message.answer("Вы вышли из магазина.", reply_markup=main_menu())
+            return
+        index = choice - 1
+        if index < 0 or index >= len(goods):
+            await message.answer("Неверный номер")
+            return
+        item = goods[index]
+        db: Database = message.bot.db
+        user = await db.users.get_user(message.from_user.id, message.chat.id)
+        if not user or not user.spend_gold(item.price):
+            await message.answer("Недостаточно золота")
+            return
+        await db.users.update_user(user, message.chat.id)
+        await db.inventory.add_item(user.id, message.chat.id, item)
+        await message.answer(f"Куплено: {item.name}")
+        return
+
+    # --- Инвентарь ---
+    items = active_inventories.get(key)
+    if items is None:
         return
     choice = int(message.text)
     if choice == 0:
-        active_shops.pop(key, None)
-        await message.answer("Вы вышли из магазина.", reply_markup=main_menu())
+        active_inventories.pop(key, None)
+        await message.answer("Вы вышли из инвентаря.", reply_markup=main_menu())
         return
     index = choice - 1
-    if index < 0 or index >= len(goods):
+    if index < 0 or index >= len(items):
         await message.answer("Неверный номер")
         return
-    item = goods[index]
+    item = items[index]
     db: Database = message.bot.db
-    user = await db.users.get_user(message.from_user.id, message.chat.id)
-    if not user or not user.spend_gold(item.price):
-        await message.answer("Недостаточно золота")
+    chars = await db.characters.get_characters(message.from_user.id, message.chat.id)
+    if not chars:
+        await message.answer("Нет персонажей")
         return
-    await db.users.update_user(user, message.chat.id)
-    await db.inventory.add_item(user.id, message.chat.id, item)
-    await message.answer(f"Куплено: {item.name}")
+    pc = chars[0]
+    if isinstance(item, GearItem):
+        pc.equip_item(item)
+    else:
+        pc.consume_potion(item)
+    await db.characters.update_character(pc, message.chat.id)
+    await db.inventory.remove_item(item.db_id, message.chat.id)
+    await message.answer(f"Использовано: {item.name}")

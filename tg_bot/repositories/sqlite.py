@@ -187,3 +187,10 @@ class SQLiteInventoryRepo(AbstractInventoryRepo):
             (user_id, chat_id, json.dumps(data)),
         )
         await self.conn.commit()
+
+    async def remove_item(self, item_id: int, chat_id: int) -> None:
+        await self.conn.execute(
+            "DELETE FROM inventory WHERE id=? AND chat_id=?",
+            (item_id, chat_id),
+        )
+        await self.conn.commit()
