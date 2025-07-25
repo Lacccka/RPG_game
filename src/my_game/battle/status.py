@@ -12,12 +12,8 @@ _STATUS_CFG = CONFIG["battle_rules"]["status_effects"]
 
 
 def start_of_turn(combatant: "Combatant") -> None:
-    """
-    FIX: для backward compatibility.
-    Теперь весь периодический урон и уменьшение duration
-    выполняются в end_of_turn, так что здесь просто перенаправляем.
-    """
-    end_of_turn(combatant)
+    """Хук для эффектов в начале хода (пока не используется)."""
+    return None
 
 
 def _apply_periodic_damage(combatant: "Combatant") -> None:
@@ -129,3 +125,4 @@ def end_of_turn(combatant: "Combatant") -> None:
     В конце хода наносим периодический урон и снимаем duration.
     """
     _apply_periodic_damage(combatant)
+    combatant.tick_effects()

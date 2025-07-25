@@ -38,8 +38,7 @@ def take_turn(
         if not user.has_effect("survive_one_turn"):
             user.apply_effect({"effect": "survive_one_turn"})
 
-    # ── Подготовка хода: тики эффектов, кулдаунов, маны, и периодические уроны ──
-    user.tick_effects()
+    # ── Подготовка хода: кулдауны и реген маны ──
     user.tick_cooldowns()
     user.tick_mana()
     start_of_turn(user)

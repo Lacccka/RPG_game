@@ -138,6 +138,12 @@ class PlayerCharacter(Combatant):
 
     def attack(self, target: Combatant) -> None:
         """Обычная атака с учётом пассивки Cleave."""
+        visible = getattr(self, "_visible_enemies", [target])
+        allowed = before_action(self, visible)
+        if not allowed:
+            return
+        if target not in allowed:
+            target = allowed[0]
         if not check_hit(self, target):
             print(f"{self.name} промахивается! (шанс {self._last_hit:.1%})")
             return
@@ -164,7 +170,7 @@ class PlayerCharacter(Combatant):
                     other.take_damage(splash_dmg)
 
     def _log_hit(self, target: Combatant, dmg: int) -> None:
-        msg = f"{self.name} ({self.char_class.display_name}) "
+        msg = f"{self.display_name} ({self.char_class.display_name}) "
         if getattr(self, "_last_crit", False):
             msg += "НАНОСИТ КРИТ! "
         msg += f"наносит {dmg} урона"

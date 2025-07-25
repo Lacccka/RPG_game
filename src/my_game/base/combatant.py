@@ -3,7 +3,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Dict, List, ClassVar
 
 from ..config import CONFIG
 from ..battle.status import (
@@ -44,17 +44,21 @@ class Combatant(ABC):
     skills: List[str] = field(default_factory=list)
 
     # Системные поля
+    _uid_counter: ClassVar[int] = 0
     health: int = field(init=False)
     _has_acted: bool = field(default=False, init=False)
     _last_incoming_damage: int = field(default=0, init=False)
     _last_stand_used: bool = field(
         default=False, init=False
     )  # трек, был ли уже Last Stand
+    _uid: int = field(init=False)
 
     def __post_init__(self):
         # стартовое здоровье и мана
         self.health = self.max_health
         self.mana = self.base_mana
+        type(self)._uid_counter += 1
+        self._uid = type(self)._uid_counter
 
     @abstractmethod
     def attack(self, target: Combatant) -> None:
@@ -102,20 +106,20 @@ class Combatant(ABC):
             ]
             self._last_stand_used = True
             self.health = 1
-            print(f"{self.name} активирует Last Stand и остаётся с 1 HP!")
+            print(f"{self.display_name} активирует Last Stand и остаётся с 1 HP!")
             return
 
         # 3) обычное вычитание
         self.health = max(self.health - amount, 0)
         print(
-            f"{self.name} получает {amount} урона, осталось {self.health}/{self.max_health} HP."
+            f"{self.display_name} получает {amount} урона, осталось {self.health}/{self.max_health} HP."
         )
 
     def apply_effect(self, effect: Dict) -> None:
         """Наложить статус‑эффект."""
         self.status_effects.append(effect)
         print(
-            f"{self.name} получает эффект: {effect['effect']} "
+            f"{self.display_name} получает эффект: {effect['effect']} "
             f"на {effect.get('duration', '?')} ходов."
         )
 
@@ -126,8 +130,21 @@ class Combatant(ABC):
     def tick_effects(self) -> None:
         """Декрементировать duration и убирать истёкшие эффекты."""
         remaining: List[Dict] = []
+        cfgs = CONFIG["battle_rules"]["status_effects"]
         for effect in self.status_effects:
             if "duration" in effect:
+                cfg = cfgs.get(effect["effect"], {})
+
+                if (
+                    cfg.get("periodic_damage")
+                    and cfg.get("duration_decrement") == "end_of_turn"
+                ):
+                    remaining.append(effect)
+                    continue
+
+                if cfg.get("duration_decrement") == "none":
+                    remaining.append(effect)
+                    continue
                 effect["duration"] -= 1
                 if effect["duration"] > 0:
                     remaining.append(effect)
@@ -188,14 +205,14 @@ class Combatant(ABC):
     def take_turn(self, opponent: Combatant) -> None:
         """
         Выполнить ход:
-          1. tick_effects, tick_cooldowns, tick_mana
+          1. tick_cooldowns, tick_mana
           2. start_of_turn
           3. ai_take_turn
           4. apply_extra_turn
           5. end_of_turn
           6. отметить _has_acted
         """
-        self.tick_effects()
+
         self.tick_cooldowns()
         self.tick_mana()
 
@@ -215,6 +232,11 @@ class Combatant(ABC):
         end_of_turn(self)
 
         self._has_acted = True
+
+    @property
+    def display_name(self) -> str:
+        """Имя с идентификатором для логов."""
+        return f"{self.name}#{self._uid}"
 
     @property
     def is_alive(self) -> bool:

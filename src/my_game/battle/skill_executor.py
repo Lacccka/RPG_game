@@ -4,6 +4,7 @@ import random
 from typing import List, Union, Sequence, Optional
 from my_game.battle.enums import Element, DamageSource, CritType
 from my_game.battle.damage import calc_damage, check_hit
+from my_game.battle.status import before_action
 from my_game.config import CONFIG
 from my_game.base.combatant import Combatant
 
@@ -60,6 +61,12 @@ def execute_skill(
         targets = [targets]
     else:
         targets = [t for t in targets if isinstance(t, Combatant)]
+
+    visible = getattr(user, "_visible_enemies", targets)
+    allowed = before_action(user, visible)
+    if not allowed:
+        return
+    targets = [t for t in targets if t in allowed] or allowed
 
     cfg = CONFIG["skills"][skill_name]
     mana_cost = cfg.get("mana_cost", cfg.get("cost", {}).get("mana", 0))
@@ -129,7 +136,7 @@ def _exec_damage(user, targets, skill_name, cfg):
         print(f"{user.name} использует {skill_name}! Наносит {dmg} урона.")
         tgt.take_damage(dmg)
 
-        if cfg.get("effect"):
+        if cfg.get("effect") and tgt.is_alive:
             _apply_effect(tgt, cfg)
 
 

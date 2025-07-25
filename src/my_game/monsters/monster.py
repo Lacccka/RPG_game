@@ -10,6 +10,7 @@ from ..config import CONFIG
 from .monster_type import MonsterType
 from ..battle.damage import check_hit, calc_damage
 from ..battle.enums import Element
+from ..battle.status import before_action
 
 # ──────────────────────────────────────────────────────────────────────────────
 #  Константы из YAML
@@ -63,6 +64,13 @@ class Monster(Combatant):
     #  Боевое API
     # ───────────────────────
     def attack(self, target: Combatant) -> None:
+        visible = getattr(self, "_visible_enemies", [target])
+        allowed = before_action(self, visible)
+        if not allowed:
+            return
+        if target not in allowed:
+            target = allowed[0]
+
         if not check_hit(self, target):
             print(f"{self.name} промахивается! (шанс {self._last_hit:.1%})")
             return
@@ -75,15 +83,15 @@ class Monster(Combatant):
     #  Служебное
     # ───────────────────────
     def _log_hit(self, target: Combatant, dmg: int) -> None:
-        msg = f"{self.name} ({self.monster_type.name}) "
+        msg = f"{self.display_name} ({self.monster_type.name}) "
         if getattr(self, "_last_crit", False):
             msg += "НАНОСИТ КРИТ! "
-        msg += f"наносит {dmg} урона "
+        msg += f"наносит {dmg} урона"
 
         if getattr(self, "_last_weak", False):
-            msg += "(слабость)"
+            msg += " (слабость)"
         elif getattr(self, "_last_resist", False):
-            msg += "(резист)"
+            msg += " (резист)"
 
         print(msg + ".")
 
