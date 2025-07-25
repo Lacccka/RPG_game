@@ -15,6 +15,7 @@ from aiogram.filters import CommandStart
 from ..repositories.db import Database
 from ..services import simulate_battle, store
 from my_game.characters.character_class import CharacterClass
+from my_game.config import CONFIG
 
 router = Router()
 # Отбираем только личные чаты
@@ -22,6 +23,7 @@ router.message.filter(F.chat.type == ChatType.PRIVATE)
 
 active_shops: dict[tuple[int, int], list] = {}
 party_select: dict[tuple[int, int], list] = {}
+pending_battles: dict[tuple[int, int], list] = {}
 
 
 def main_menu() -> ReplyKeyboardMarkup:
@@ -207,19 +209,50 @@ async def start_battle(message: Message):
         return
     chars = await db.characters.get_characters(message.from_user.id, message.chat.id)
     id_map = {c.db_id: c for c in chars}
-    pc = id_map.get(party_ids[0])
-    if not pc:
+    party = [id_map[cid] for cid in party_ids if cid in id_map]
+    if not party:
         await message.answer("Ошибка отряда.", reply_markup=main_menu())
         return
-    pc.owner = await db.users.get_user(message.from_user.id, message.chat.id)
-    log, win, xp, gold = simulate_battle(pc, tier=1)
-    await db.characters.update_character(pc, message.chat.id)
-    await db.users.update_user(pc.owner, message.chat.id)
-    await message.answer(
+    owner = await db.users.get_user(message.from_user.id, message.chat.id)
+    for pc in party:
+        pc.owner = owner
+
+    pending_battles[(message.from_user.id, message.chat.id)] = party
+
+    tiers = CONFIG["monsters"]["monster_tiers"]
+    tier_keys = ["tier1", "tier2", "tier3", "tier4"]
+    buttons = [
+        [InlineKeyboardButton(text=tiers[k]["name"], callback_data=f"battle:{i+1}")]
+        for i, k in enumerate(tier_keys)
+    ]
+    kb = InlineKeyboardMarkup(inline_keyboard=buttons)
+    await message.answer("Выберите сложность боя:", reply_markup=kb)
+
+
+@router.callback_query(F.data.startswith("battle:"))
+async def handle_battle_callback(query: CallbackQuery):
+    tier = int(query.data.split(":", 1)[1])
+    key = (query.from_user.id, query.message.chat.id)
+    party = pending_battles.pop(key, None)
+    if not party:
+        await query.message.answer("Ошибка: отряд не найден.", reply_markup=main_menu())
+        await query.answer()
+        return
+
+    log, win, xp, gold = simulate_battle(party, tier)
+    db: Database = query.message.bot.db
+    for pc in party:
+        await db.characters.update_character(pc, query.message.chat.id)
+    owner = party[0].owner
+    if owner:
+        await db.users.update_user(owner, query.message.chat.id)
+
+    await query.message.answer(
         f"Результат боя:\n<pre>{log}</pre>",
         parse_mode="HTML",
         reply_markup=main_menu(),
     )
+    await query.answer()
 
 
 @router.message(F.text == "Магазин")
