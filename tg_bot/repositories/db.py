@@ -64,3 +64,10 @@ class Database:
         if self.conn:
             await self.conn.close()
             self.conn = None
+
+    async def __aenter__(self):
+        await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()

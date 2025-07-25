@@ -25,18 +25,14 @@ async def main() -> None:
     token = os.getenv("BOT_TOKEN")
     if not token:
         raise RuntimeError("BOT_TOKEN env variable not set")
-    db = Database("bot.db")
-    await db.connect()
-    bot = Bot(token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    bot.db = db
-    dp = Dispatcher()
-    dp.include_router(private.router)
-    dp.include_router(group.router)
-    await bot.delete_webhook(drop_pending_updates=True)
-    try:
+    async with Database("bot.db") as db:
+        bot = Bot(token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+        bot.db = db
+        dp = Dispatcher()
+        dp.include_router(private.router)
+        dp.include_router(group.router)
+        await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot)
-    finally:
-        await db.close()
 
 
 if __name__ == "__main__":
