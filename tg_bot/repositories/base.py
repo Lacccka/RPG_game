@@ -43,3 +43,13 @@ class AbstractInventoryRepo(ABC):
 
     @abstractmethod
     async def add_item(self, user_id: int, chat_id: int, item) -> None: ...
+
+
+class AbstractPartyRepo(ABC):
+    @abstractmethod
+    async def get_party(self, user_id: int, chat_id: int) -> Sequence[int]: ...
+
+    @abstractmethod
+    async def set_party(
+        self, user_id: int, chat_id: int, char_ids: Sequence[int]
+    ) -> None: ...

@@ -11,7 +11,12 @@ from my_game.characters.character_class import CharacterClass
 from my_game.items.item import GearItem, PotionItem
 from my_game.items.enums import ItemSlot, ItemClass, ItemQuality
 
-from .base import AbstractUsersRepo, AbstractCharactersRepo, AbstractInventoryRepo
+from .base import (
+    AbstractUsersRepo,
+    AbstractCharactersRepo,
+    AbstractInventoryRepo,
+    AbstractPartyRepo,
+)
 
 
 class SQLiteUsersRepo(AbstractUsersRepo):
@@ -46,6 +51,29 @@ class SQLiteUsersRepo(AbstractUsersRepo):
         await self.conn.execute(
             "UPDATE users SET username=?, gold=? WHERE user_id=? AND chat_id=?",
             (player.username, player.gold, player.id, chat_id),
+        )
+        await self.conn.commit()
+
+
+class SQLitePartyRepo(AbstractPartyRepo):
+    def __init__(self, conn: aiosqlite.Connection):
+        self.conn = conn
+
+    async def get_party(self, user_id: int, chat_id: int):
+        cur = await self.conn.execute(
+            "SELECT char_ids FROM party WHERE user_id=? AND chat_id=?",
+            (user_id, chat_id),
+        )
+        row = await cur.fetchone()
+        if row:
+            return json.loads(row[0])
+        return []
+
+    async def set_party(self, user_id: int, chat_id: int, char_ids):
+        await self.conn.execute(
+            "INSERT INTO party(user_id, chat_id, char_ids) VALUES (?, ?, ?) "
+            "ON CONFLICT(user_id, chat_id) DO UPDATE SET char_ids=excluded.char_ids",
+            (user_id, chat_id, json.dumps(list(char_ids))),
         )
         await self.conn.commit()
 

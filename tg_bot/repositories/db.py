@@ -1,6 +1,11 @@
 import aiosqlite
 
-from .sqlite import SQLiteUsersRepo, SQLiteCharactersRepo, SQLiteInventoryRepo
+from .sqlite import (
+    SQLiteUsersRepo,
+    SQLiteCharactersRepo,
+    SQLiteInventoryRepo,
+    SQLitePartyRepo,
+)
 
 
 class Database:
@@ -10,6 +15,7 @@ class Database:
         self.users: SQLiteUsersRepo | None = None
         self.characters: SQLiteCharactersRepo | None = None
         self.inventory: SQLiteInventoryRepo | None = None
+        self.party: SQLitePartyRepo | None = None
 
     async def connect(self):
         self.conn = await aiosqlite.connect(self.path)
@@ -18,6 +24,7 @@ class Database:
         self.users = SQLiteUsersRepo(self.conn)
         self.characters = SQLiteCharactersRepo(self.conn)
         self.inventory = SQLiteInventoryRepo(self.conn)
+        self.party = SQLitePartyRepo(self.conn)
 
     async def _create_tables(self):
         await self.conn.execute(
@@ -54,6 +61,17 @@ class Database:
                 user_id INTEGER,
                 chat_id INTEGER,
                 data TEXT,
+                FOREIGN KEY(user_id, chat_id) REFERENCES users(user_id, chat_id)
+            )
+            """
+        )
+        await self.conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS party (
+                user_id INTEGER,
+                chat_id INTEGER,
+                char_ids TEXT,
+                PRIMARY KEY(user_id, chat_id),
                 FOREIGN KEY(user_id, chat_id) REFERENCES users(user_id, chat_id)
             )
             """
